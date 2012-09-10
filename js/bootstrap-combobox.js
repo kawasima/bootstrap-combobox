@@ -60,8 +60,8 @@
         , selected = false
       this.$target.find('option').each(function() {
         var option = $(this)
-        map[option.text()] = option.val()
-        source.push(option.text())
+        map[option.attr("label") || option.text()] = option.val()
+        source.push({label: option.attr("label") || option.text(), value: option.text()})
         if(option.attr('selected')) selected = option.html()
       })
       this.map = map
@@ -117,9 +117,9 @@
 
       this.query = this.$element.val()
 
-      items = $.grep(this.source, function (item) {
-        if (that.matcher(item)) return item
-      })
+      items = $.map($.grep(this.source, function (item) {
+        if (that.matcher(item.value)) return item.value
+			}), function (item) { return item.label })
 
       items = this.sorter(items)
 
