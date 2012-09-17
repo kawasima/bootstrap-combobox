@@ -36,6 +36,7 @@
     this.selected = false
     this.refresh()
     this.listen()
+    this.keypressCount = 0
   }
 
   /* NOTE: COMBOBOX EXTENDS BOOTSTRAP-TYPEAHEAD.js
@@ -150,7 +151,13 @@
     }
 
   // modified typeahead function to clear on type and prevent on moving around
+  , keypress: function(e) {
+      if (e.keyCode != 241 && e.keyCode != 242) {
+          this.keypressCount++;
+      }
+  }
   , keyup: function (e) {
+      this.keypressCount--
       switch(e.keyCode) {
         case 40: // down arrow
         case 39: // right arrow
@@ -163,8 +170,14 @@
 
         case 9: // tab
         case 13: // enter
-          if (!this.shown) return
-          this.select()
+          if (this.keypressCount < 0) {
+              this.clearTarget()
+              this.lookup()
+          } else {
+              if (!this.shown) return
+              this.select()
+          }
+          this.keypressCount = 0;
           break
 
         case 27: // escape
